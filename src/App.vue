@@ -1,7 +1,7 @@
 <template>
   <div id="app">
-    <Header />
-    <Main />
+    <Header @sendResults="getMovies"/>
+    <Main :movies="movieList"/>
   </div>
 </template>
 
@@ -14,7 +14,19 @@ export default {
     components: { 
       Header, 
       Main
-    }
+    },
+    data() {
+        return {
+            movieList: []
+        };
+    },
+    methods: {
+        getMovies(searchResults) {
+          console.log(searchResults);
+            this.movieList = searchResults;
+            console.log(this.movieList);
+        }
+    },
 }
 </script>
 

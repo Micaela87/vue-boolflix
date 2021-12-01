@@ -1,7 +1,7 @@
 <template>
   <div>
     <form action="">
-        <input type="text" placeholder="Search a movie" v-model="searchParam">
+        <input type="text" placeholder="Search a movie" v-model.trim="searchParam">
         <button @click.prevent="getMovies">Search</button>
     </form>
   </div>
@@ -29,6 +29,16 @@ export default {
               let response = await axios.get(`${this.url}?api_key=${this.apiKey}&query=${this.searchParam}`);
               if (response.status === 200) {
                   console.log(response);
+                  this.movieList = response.data.results.map((result) => {
+                      return {
+                          originalTitle : result.original_title,
+                          title: result.title,
+                          language: result.original_language,
+                          rating: result.vote_average
+                      }
+                  });
+                  console.log(this.movieList);
+                  this.$emit('sendResults', this.movieList);
               }
               
           } catch(error) {
