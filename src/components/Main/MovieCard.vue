@@ -6,9 +6,11 @@
           <li>
               <img :src="details.language === 'it' ? require('@/assets/img/ita.png') : require('@/assets/img/eng.png')" alt="">
               <!-- {{ details.language }} -->
-          </li>
-            
+          </li> 
           <li>{{ details.rating }}</li>
+          <li>
+              <img :src="details.poster" :alt="details.title">
+        </li>
       </ul>
   </div>
 </template>

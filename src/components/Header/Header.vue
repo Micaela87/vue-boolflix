@@ -35,6 +35,7 @@ export default {
 
                 this.seriesList = series.data.results.map((result) => {
                       return {
+                          poster: `https://image.tmdb.org/t/p/w342${result.poster_path}`,
                           originalTitle : result.original_name,
                           title: result.name,
                           language: result.original_language,
@@ -47,6 +48,7 @@ export default {
 
                   this.movieList = movies.data.results.map((result) => {
                       return {
+                          poster: `https://image.tmdb.org/t/p/w342${result.poster_path}`,
                           originalTitle : result.original_title,
                           title: result.title,
                           language: result.original_language,
