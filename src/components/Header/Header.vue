@@ -1,6 +1,9 @@
 <template>
   <div>
-    
+    <form action="">
+        <input type="text" placeholder="Search a movie" v-model="searchParam">
+        <button @click.prevent="getMovies">Search</button>
+    </form>
   </div>
 </template>
 
@@ -17,19 +20,21 @@ export default {
           movieList: []
       }
   },
-  created() {
-      this.getMovies();
-  },
+//   created() {
+//       this.getMovies();
+//   },
   methods: {
       getMovies: async function() {
           try {
               let response = await axios.get(`${this.url}?api_key=${this.apiKey}&query=${this.searchParam}`);
-              console.log(response);
+              if (response.status === 200) {
+                  console.log(response);
+              }
               
           } catch(error) {
               console.log(error)
           }
-      }
+      },
   }
 }
 </script>
