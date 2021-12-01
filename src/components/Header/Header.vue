@@ -38,6 +38,7 @@ export default {
                           poster: `https://image.tmdb.org/t/p/w342${result.poster_path}`,
                           originalTitle : result.original_name,
                           title: result.name,
+                          overview: result.overview,
                           language: result.original_language,
                           rating: result.vote_average
                       }
@@ -51,6 +52,7 @@ export default {
                           poster: `https://image.tmdb.org/t/p/w342${result.poster_path}`,
                           originalTitle : result.original_title,
                           title: result.title,
+                          overview: result.overview,
                           language: result.original_language,
                           rating: result.vote_average
                       }

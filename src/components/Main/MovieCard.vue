@@ -3,19 +3,20 @@
       <ul>
           <li>{{ details.originalTitle }}</li>
           <li>{{ details.title }}</li>
+          <li>{{ details.overview }}</li>
           <li>
               <img :src="details.language === 'it' ? require('@/assets/img/ita.png') : require('@/assets/img/eng.png')" alt="">
               <!-- {{ details.language }} -->
           </li> 
-          <li>{{ ratingOutOfFive }}</li>
-          <font-awesome-icon v-for="n in 5" :key="n" :id="n" :icon="['fas', 'star']" :class="n <= ratingOutOfFive ? 'rated' : 'not-rated'"/>
-          <!-- <font-awesome-icon :icon="['fas', 'star']"/>
-          <font-awesome-icon :icon="['fas', 'star']"/>
-          <font-awesome-icon :icon="['fas', 'star']"/>
-          <font-awesome-icon :icon="['fas', 'star']"/> -->
           <li>
-              <img :src="details.poster" :alt="details.title">
-        </li>
+              {{ ratingOutOfFive }}
+              <div>
+                  <font-awesome-icon v-for="n in 5" :key="n" :id="n" :icon="['fas', 'star']" :class="n <= ratingOutOfFive ? 'rated' : 'not-rated'"/>
+              </div>
+          </li>
+          <li>
+            <img :src="details.poster" :alt="details.title">
+          </li>   
       </ul>
   </div>
 </template>
