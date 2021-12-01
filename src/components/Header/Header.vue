@@ -15,9 +15,11 @@ export default {
   data() {
       return {
           apiKey: '51568f4302a2904751f1dfa9123f0199',
-          url: 'https://api.themoviedb.org/3/search/movie',
+          urlMovie: 'https://api.themoviedb.org/3/search/movie',
+          urlSeries: 'https://api.themoviedb.org/3/search/tv',
           searchParam: 'ritorno al futuro',
-          movieList: []
+          movieList: [],
+          seriesList: []
       }
   },
 //   created() {
@@ -26,10 +28,24 @@ export default {
   methods: {
       getMovies: async function() {
           try {
-              let response = await axios.get(`${this.url}?api_key=${this.apiKey}&language=it-IT&query=${this.searchParam}`);
-              if (response.status === 200) {
-                  console.log(response);
-                  this.movieList = response.data.results.map((result) => {
+              let movies = await axios.get(`${this.urlMovie}?api_key=${this.apiKey}&language=it-IT&query=${this.searchParam}`);
+              let series = await axios.get(`${this.urlSeries}?api_key=${this.apiKey}&language=it-IT&query=${this.searchParam}`)
+              if (series.status === 200) {
+                  console.log('serie tv', series);
+
+                this.seriesList = series.data.results.map((result) => {
+                      return {
+                          originalTitle : result.original_name,
+                          title: result.name,
+                          language: result.original_language,
+                          rating: result.vote_average
+                      }
+                  });
+              }
+              if (movies.status === 200) {
+                  console.log('film', movies);
+
+                  this.movieList = movies.data.results.map((result) => {
                       return {
                           originalTitle : result.original_title,
                           title: result.title,
@@ -37,9 +53,10 @@ export default {
                           rating: result.vote_average
                       }
                   });
-                  console.log(this.movieList);
-                  this.$emit('sendResults', this.movieList);
+                //   console.log(this.movieList);
               }
+
+              this.$emit('sendResults', [...this.movieList, ...this.seriesList]);
               
           } catch(error) {
               console.log(error)
