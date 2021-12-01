@@ -1,18 +1,22 @@
 <template>
   <div class="card">
-      <ul>
-          <li><strong>Titolo originale: </strong>{{ details.originalTitle }}</li>
-          <li><strong>Titolo: </strong>{{ details.title }}</li>
-          <li><strong>Overview: </strong>{{ details.overview }}</li>
-          <li><strong>Lingua: </strong>
-              <img class="language" :src="details.language === 'it' ? require('@/assets/img/ita.png') : require('@/assets/img/eng.png')" alt="">
-              <!-- {{ details.language }} -->
-          </li> 
-          <li><strong>Voti: </strong>
-              {{ ratingOutOfFive }}
-              <div>
-                  <font-awesome-icon v-for="n in 5" :key="n" :id="n" :icon="['fas', 'star']" :class="n <= ratingOutOfFive ? 'rated' : 'not-rated'"/>
-              </div>
+      <ul class="container">
+          <li>
+              <ul class="details">
+                <li><strong>Titolo originale: </strong>{{ details.originalTitle }}</li>
+                <li><strong>Titolo: </strong>{{ details.title }}</li>
+                <li><strong>Overview: </strong>{{ details.overview }}</li>
+                <li><strong>Lingua: </strong>
+                    <img class="language" :src="details.language === 'it' ? require('@/assets/img/ita.png') : require('@/assets/img/eng.png')" alt="">
+                    <!-- {{ details.language }} -->
+                </li> 
+                <li><strong>Voti: </strong>
+                    {{ ratingOutOfFive }}
+                    <div>
+                        <font-awesome-icon v-for="n in 5" :key="n" :id="n" :icon="['fas', 'star']" :class="n <= ratingOutOfFive ? 'rated' : 'not-rated'"/>
+                    </div>
+                </li>
+              </ul>
           </li>
           <li class="poster">
             <img :src="details.poster" :alt="details.title">
@@ -54,13 +58,20 @@ export default {
         font-size: 1.5rem;
         line-height: 1.4;
         color: white;
+    }
+
+    .container {
         position: relative;
         padding: 4rem 1rem;
     }
 
-    // li {
-    //     margin: 0.5rem 0;
-    // }
+    .details {
+        display: none;
+    }
+
+    .details li {
+        margin: 0.5rem 0;
+    }
 
     .language {
         width: 2rem;
@@ -90,5 +101,13 @@ export default {
         width: 100%;
         height: 100%;
         object-fit: cover;
+    }
+
+    .card:hover .details {
+        display: block;
+    }
+
+    .card:hover .poster {
+        display: none;
     }
 </style>
