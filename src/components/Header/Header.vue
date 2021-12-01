@@ -26,7 +26,7 @@ export default {
   methods: {
       getMovies: async function() {
           try {
-              let response = await axios.get(`${this.url}?api_key=${this.apiKey}&query=${this.searchParam}`);
+              let response = await axios.get(`${this.url}?api_key=${this.apiKey}&language=it-IT&query=${this.searchParam}`);
               if (response.status === 200) {
                   console.log(response);
                   this.movieList = response.data.results.map((result) => {
