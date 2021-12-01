@@ -8,6 +8,11 @@
               <!-- {{ details.language }} -->
           </li> 
           <li>{{ details.rating }}</li>
+          <font-awesome-icon :icon="['far', 'star']"/>
+          <font-awesome-icon :icon="['far', 'star']"/>
+          <font-awesome-icon :icon="['far', 'star']"/>
+          <font-awesome-icon :icon="['far', 'star']"/>
+          <font-awesome-icon :icon="['far', 'star']"/>
           <li>
               <img :src="details.poster" :alt="details.title">
         </li>
