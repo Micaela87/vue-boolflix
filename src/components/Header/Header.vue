@@ -1,10 +1,12 @@
 <template>
-  <div>
+  <header>
+    <div id="logo">BOOTFLIX</div>
     <form action="">
-        <input type="text" placeholder="Search a movie" v-model.trim="searchParam">
+        <input type="text" placeholder="Search a movie or a TV series" v-model.trim="searchParam">
         <button @click.prevent="getMovies">Search</button>
+        <button @click.prevent="resetSearch">Reset Search</button>
     </form>
-  </div>
+  </header>
 </template>
 
 <script>
@@ -17,14 +19,11 @@ export default {
           apiKey: '51568f4302a2904751f1dfa9123f0199',
           urlMovie: 'https://api.themoviedb.org/3/search/movie',
           urlSeries: 'https://api.themoviedb.org/3/search/tv',
-          searchParam: 'ritorno al futuro',
+          searchParam: '',
           movieList: [],
           seriesList: []
       }
   },
-//   created() {
-//       this.getMovies();
-//   },
   methods: {
       getMovies: async function() {
           try {
@@ -66,10 +65,43 @@ export default {
               console.log(error)
           }
       },
+      resetSearch() {
+          this.searchParam = '';
+          this.movieList = [];
+          this.seriesList = [];
+          this.$emit('sendResults', [...this.movieList, ...this.seriesList]);
+      }
   }
 }
 </script>
 
 <style scoped lang="scss">
+    header {
+        height: 10rem;
+        background-color: black;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0 2rem;
+    }
 
+    #logo {
+        color: red;
+        font-size: 2rem;
+        font-weight: bold;
+        width: fit-content;
+    }
+
+    input {
+        width: 40rem;
+    }
+
+    ::placeholder {
+        font-family: 'Roboto';
+    }
+
+    button, input {
+        height: 3rem;
+        padding: 0 1rem;
+    }
 </style>
