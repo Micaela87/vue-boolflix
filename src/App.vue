@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <Header @sendResults="getMovies"/>
-    <Main :movies="movieList"/>
+    <Main :movies="movieList" :active="searched"/>
   </div>
 </template>
 
@@ -17,14 +17,16 @@ export default {
     },
     data() {
         return {
-            movieList: []
+            movieList: [],
+            searched: false
         };
     },
     methods: {
-        getMovies(searchResults) {
+        getMovies(searchResults, searched) {
           console.log(searchResults);
             this.movieList = searchResults;
             console.log(this.movieList);
+            this.searched = searched;
         }
     },
 }

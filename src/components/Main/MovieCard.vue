@@ -11,7 +11,7 @@
                     <!-- {{ details.language }} -->
                 </li> 
                 <li><strong>Voti: </strong>
-                    {{ ratingOutOfFive }}
+                    {{ ratingOutOfFive }}/{{maxRating}}
                     <div>
                         <font-awesome-icon v-for="n in 5" :key="n" :id="n" :icon="['fas', 'star']" :class="n <= ratingOutOfFive ? 'rated' : 'not-rated'"/>
                     </div>
@@ -32,10 +32,15 @@ export default {
   props: {
       details: Object
   },
+  data() {
+      return {
+          maxRating: 5
+      }
+  },
   computed: {
       ratingOutOfFive() {
           if (this.details.rating) {
-              return Math.floor((5 * this.details.rating) / 10);
+              return Math.floor((this.maxRating * this.details.rating) / 10);
           } else {
               return 'Voto non disponibile';
           }
@@ -80,11 +85,11 @@ export default {
         vertical-align: middle;
     }
     .rated {
-        color: blue;
+        color: yellow;
     }
 
     .not-rated {
-        color: yellow;
+        color: white;
     }
 
     .poster {

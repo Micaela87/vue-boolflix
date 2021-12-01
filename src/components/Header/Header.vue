@@ -21,7 +21,8 @@ export default {
           urlSeries: 'https://api.themoviedb.org/3/search/tv',
           searchParam: '',
           movieList: [],
-          seriesList: []
+          seriesList: [],
+          searched: false
       }
   },
   methods: {
@@ -59,7 +60,9 @@ export default {
                 //   console.log(this.movieList);
               }
 
-              this.$emit('sendResults', [...this.movieList, ...this.seriesList]);
+              this.searched = true;
+
+              this.$emit('sendResults', [...this.movieList, ...this.seriesList], this.searched);
               
           } catch(error) {
               console.log(error)
