@@ -37,47 +37,89 @@ export default {
         } else {
           this.resetSearch();
         }
-      }
+      },
     },
+    // computed: {
+    //   fullList() {
+    //     return [...this.seriesList, ...this.movieList]
+    //   }
+    // },
     methods: {
         getMovies: async function() {
             try {
                 let movies = await axios.get(`${this.urlMovie}?api_key=${this.apiKey}&language=it-IT&query=${this.param}`);
                 let series = await axios.get(`${this.urlSeries}?api_key=${this.apiKey}&language=it-IT&query=${this.param}`)
                 if (series.status === 200) {
-
                   this.seriesList = series.data.results.map((result) => {
                         let posterImgPath = this.handleMissingImg(result.poster_path);
-                        return {
+                        let obj = {
+                            id: result.id,
                             poster: `${posterImgPath}`,
                             originalTitle : result.original_name,
                             title: result.name,
                             overview: result.overview,
                             language: result.original_language,
-                            rating: result.vote_average
+                            rating: result.vote_average,
+                            cast: ''
                         }
+
+                        let seriesCast = [];
+                        axios.get(`https://api.themoviedb.org/3/tv/${result.id}/credits?api_key=${this.apiKey}`)
+                        .then((result) => {
+                          for (let i = 0; i < 5; i++) {
+                            seriesCast.push(result.data.cast[i].name);
+                          }
+                          let seriesCastToString = seriesCast.join(', ');
+                          console.log('series', series)
+                          obj.cast = seriesCastToString;
+                        })
+                        .catch((error) => {
+                          console.log(error);
+                        });
+                        console.log(obj);
+                        return obj;
                     });
                 }
-                if (movies.status === 200) {
 
+                if (movies.status === 200) {
                     this.movieList = movies.data.results.map((result) => {
+                        
                         let posterImgPath = this.handleMissingImg(result.poster_path);
-                        return {
+
+                        let obj = {
+                            id: result.id,
                             poster: `${posterImgPath}`,
                             originalTitle : result.original_title,
                             title: result.title,
                             overview: result.overview,
                             language: result.original_language,
-                            rating: result.vote_average
+                            rating: result.vote_average,
+                            cast: ''
                         }
+
+                        let movieCast = [];
+                        axios.get(`https://api.themoviedb.org/3/movie/${result.id}/credits?api_key=${this.apiKey}`)
+                        .then((result) => {
+                          for (let i = 0; i < 5; i++) {
+                            movieCast.push(result.data.cast[i].name);
+                          }
+                          let movieCastToString = movieCast.join(', ');
+                          obj.cast = movieCastToString;
+                        })
+                        .catch((error) => {
+                          console.log(error);
+                        });
+                        console.log(obj);
+                        return obj;
                     });
                 }
-
-                return this.fullList = [...this.movieList, ...this.seriesList];
                 
             } catch(error) {
                 console.log(error)
             }
+            
+            this.fullList = [...this.movieList, ...this.seriesList];
+            console.log('full list', this.fullList)
         },
         resetSearch() {
           return this.fullList = [];
@@ -91,7 +133,7 @@ export default {
             }
 
             return posterImgPath;
-        }
+        },
     }
 }
 </script>

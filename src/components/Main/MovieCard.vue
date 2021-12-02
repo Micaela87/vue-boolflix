@@ -7,7 +7,8 @@
             <li><strong>Lingua: </strong>
                 <img v-if="details.language === 'it' || details.language === 'en'" class="language" :src="require('@/assets/img/' + details.language + '.png')" :alt="details.language">
                 <span v-else>{{ details.language.toUpperCase() }}</span>               
-            </li> 
+            </li>
+            <li><strong>Cast: </strong>{{ details.cast }}</li> 
             <li><strong>Voto: </strong>
                 <span v-if="ratingOutOfMaxRating">{{ ratingOutOfMaxRating }}/{{maxRating}}</span>
                 <span v-else>Voto non disponibile</span>
@@ -16,7 +17,7 @@
                 </div>
             </li>
             <li v-if="details.overview"><strong>Overview: </strong>{{ details.overview }}</li> 
-            <li v-else><strong>Overview: </strong>Overview non disponibile</li>           
+            <li v-else><strong>Overview: </strong>Overview non disponibile</li>        
           </ul>
           <div class="poster">
             <img :src="details.poster" :alt="details.title">              
