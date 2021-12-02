@@ -4,12 +4,6 @@
         <MovieCard
         v-for="(movie, i) in fullList" :key="i"
         :details="movie"/>
-      <!-- </div>
-      <div class="results" v-if="!this.movies.length && this.active">
-        <h2>La ricerca non ha prodotto risultati</h2>
-      </div>
-      <div class="results" v-if="!this.active">
-        <h2>Usa la barra di ricerca in alto per trovare il tuo film preferito</h2> -->
       </div>
   </main>
 </template>
@@ -25,14 +19,12 @@ export default {
     },
       props: {
           param: String,
-          // active: Boolean
     },
     data() {
       return {
           apiKey: '51568f4302a2904751f1dfa9123f0199',
           urlMovie: 'https://api.themoviedb.org/3/search/movie',
           urlSeries: 'https://api.themoviedb.org/3/search/tv',
-          // searchParam: this.param,
           movieList: [],
           seriesList: [],
           fullList: [],
@@ -42,20 +34,18 @@ export default {
     watch: {
       param(newValue) {
         if (newValue) {
-          console.log(newValue);
           this.getMovies();
+        } else {
+          this.resetSearch();
         }
       }
     },
     methods: {
         getMovies: async function() {
-          // console.log(this.searchParam);
-          if (this.param) {
             try {
                 let movies = await axios.get(`${this.urlMovie}?api_key=${this.apiKey}&language=it-IT&query=${this.param}`);
                 let series = await axios.get(`${this.urlSeries}?api_key=${this.apiKey}&language=it-IT&query=${this.param}`)
                 if (series.status === 200) {
-                    console.log('serie tv', series);
 
                   this.seriesList = series.data.results.map((result) => {
                         return {
@@ -69,7 +59,6 @@ export default {
                     });
                 }
                 if (movies.status === 200) {
-                    console.log('film', movies);
 
                     this.movieList = movies.data.results.map((result) => {
                         return {
@@ -81,22 +70,16 @@ export default {
                             rating: result.vote_average
                         }
                     });
-                  //   console.log(this.movieList);
                 }
-
-                this.searched = true;
 
                 return this.fullList = [...this.movieList, ...this.seriesList];
                 
             } catch(error) {
                 console.log(error)
             }
-          }
         },
-        getSearchParam() {
-            this.searchParam = this.param;
-            this.getMovies();
-            return true;
+        resetSearch() {
+          return this.fullList = [];
         }
     }
 }
