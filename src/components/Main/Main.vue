@@ -1,8 +1,15 @@
 <template>
   <main>
+    <form>
+        <label for="genre">Sort by Genre</label>
+        <select name="genre" id="genre" v-model="selectedGenre">
+            <option value="" selected>All</option>
+            <option :value="genre.name" v-for="(genre, i) in genres" :key="i">{{ genre.name }}</option>
+        </select>
+    </form>
       <div class="results">
         <MovieCard
-        v-for="(movie, i) in fullList" :key="i"
+        v-for="(movie, i) in filteredResults" :key="i"
         :details="movie"/>
       </div>
   </main>
@@ -15,7 +22,7 @@ import MovieCard from "./MovieCard.vue";
 export default {
     name: "Main",
     components: {
-        MovieCard
+        MovieCard,
     },
       props: {
           param: String,
@@ -28,7 +35,18 @@ export default {
           movieList: [],
           seriesList: [],
           fullList: [],
-          genres: []
+          genres: [],
+          selectedGenre: ''
+      }
+    },
+    computed: {
+      filteredResults() {
+        console.log('selectedgenre', this.selectedGenre);
+        if (!this.selectedGenre) {
+          return this.fullList
+        }
+
+        return this.fullList.filter((movie) => movie.genres.includes(this.selectedGenre));
       }
     },
     watch: {
@@ -40,11 +58,6 @@ export default {
         }
       },
     },
-    // computed: {
-    //   fullList() {
-    //     return [...this.seriesList, ...this.movieList]
-    //   }
-    // },
     created() {
       this.getAllGenres();
     },
@@ -183,6 +196,20 @@ export default {
         background-color: grey;
     }
 
+    form {
+      padding: 2rem;
+    }
+
+    label {
+      font-size: 1.6rem;
+      margin: 0 1rem;
+    }
+
+    option, select {
+      font-size: 1.6rem;
+      font-family: 'Roboto', sans-serif;
+    }
+
     .results {
         display: flex;
         flex-wrap: wrap;
@@ -190,11 +217,5 @@ export default {
         align-items: center;
         min-height: calc(100vh - 10rem);
         width: 100%;
-    }
-
-    h2 {
-        width: 100%;
-        text-align: center;
-        font-size: 2rem;
     }
 </style>
