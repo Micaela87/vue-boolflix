@@ -47,8 +47,9 @@ export default {
                 if (series.status === 200) {
 
                   this.seriesList = series.data.results.map((result) => {
+                        let posterImgPath = this.handleMissingImg(result.poster_path);
                         return {
-                            poster: `https://image.tmdb.org/t/p/w342${result.poster_path}`,
+                            poster: `${posterImgPath}`,
                             originalTitle : result.original_name,
                             title: result.name,
                             overview: result.overview,
@@ -60,8 +61,9 @@ export default {
                 if (movies.status === 200) {
 
                     this.movieList = movies.data.results.map((result) => {
+                        let posterImgPath = this.handleMissingImg(result.poster_path);
                         return {
-                            poster: `https://image.tmdb.org/t/p/w342${result.poster_path}`,
+                            poster: `${posterImgPath}`,
                             originalTitle : result.original_title,
                             title: result.title,
                             overview: result.overview,
@@ -79,6 +81,16 @@ export default {
         },
         resetSearch() {
           return this.fullList = [];
+        },
+        handleMissingImg(path) {
+            let posterImgPath = '';
+            if (path) {
+              posterImgPath = `https://image.tmdb.org/t/p/w342${path}`
+            } else {
+              posterImgPath = 'https://via.placeholder.com/342.jpg?text=Immagine+non+disponibile'
+            }
+
+            return posterImgPath;
         }
     }
 }
