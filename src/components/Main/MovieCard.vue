@@ -6,7 +6,8 @@
             <li><strong>Titolo: </strong>{{ details.title }}</li>
             <li><strong>Overview: </strong>{{ details.overview }}</li>
             <li><strong>Lingua: </strong>
-                <img class="language" :src="require('@/assets/img/' + details.language + '.png')" :alt="details.language">
+                <img v-if="details.language === 'it' || details.language === 'en'" class="language" :src="require('@/assets/img/' + details.language + '.png')" :alt="details.language">
+                <span v-else>{{ details.language.toUpperCase() }}</span>               
             </li> 
             <li><strong>Voti: </strong>
                 <span v-if="ratingOutOfMaxRating">{{ ratingOutOfMaxRating }}/{{maxRating}}</span>
@@ -42,8 +43,8 @@ export default {
           } else {
               return false;
           }
-      }
-  }
+      },
+  },
 }
 </script>
 
