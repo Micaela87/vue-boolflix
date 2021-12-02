@@ -71,7 +71,7 @@ export default {
                             language: result.original_language,
                             rating: result.vote_average,
                             cast: '',
-                            genreId: result.genre_ids
+                            genres: ''
                         }
 
                         // call to get actors of the movie
@@ -83,6 +83,9 @@ export default {
                         .catch((error) => {
                           console.log(error);
                         });
+
+                        let genres = this.handleGenres(result.genre_ids);
+                        obj.genres = genres;
 
                         console.log(obj);
                         return obj;
@@ -120,18 +123,10 @@ export default {
                           console.log(error);
                         });
 
-                        let genresNames = [];
-                        this.genres.forEach((genre) => {
-                          for (let i = 0; i < result.genre_ids.length; i++) {
-                            if (genre.id === result.genre_ids[i]) {
-                              genresNames.push(genre.name);
-                              obj.genres = genresNames.join(', ');
-                              console.log(genresNames);
-                            }
-                          }
-                        })
+                        let genres = this.handleGenres(result.genre_ids);
+                        obj.genres = genres;
 
-                        console.log(obj);
+                        // console.log(obj);
                         return obj;
                     });
                 }
@@ -162,6 +157,17 @@ export default {
             }
             let castToString = cast.join(', ');
             return castToString;
+        },
+        handleGenres(genresArr) {
+          let genresNames = [];
+          this.genres.forEach((genre) => {
+            for (let i = 0; i < genresArr.length; i++) {
+              if (genre.id === genresArr[i]) {
+                genresNames.push(genre.name);
+              }
+            }
+          });
+          return genresNames.join(', ');
         },
         getAllGenres: async function() {
           let allGenres = await axios.get(`https://api.themoviedb.org/3/genre/movie/list?api_key=${this.apiKey}`);
