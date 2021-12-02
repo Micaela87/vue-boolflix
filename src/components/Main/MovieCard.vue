@@ -8,7 +8,8 @@
                 <img v-if="details.language === 'it' || details.language === 'en'" class="language" :src="require('@/assets/img/' + details.language + '.png')" :alt="details.language">
                 <span v-else>{{ details.language.toUpperCase() }}</span>               
             </li>
-            <li><strong>Cast: </strong>{{ details.cast }}</li> 
+            <li><strong>Cast: </strong>{{ details.cast }}</li>
+            <li><strong>Genere: </strong>{{ details.genres }}</li>
             <li><strong>Voto: </strong>
                 <span v-if="ratingOutOfMaxRating">{{ ratingOutOfMaxRating }}/{{maxRating}}</span>
                 <span v-else>Voto non disponibile</span>

@@ -27,7 +27,8 @@ export default {
           urlSeries: 'https://api.themoviedb.org/3/search/tv',
           movieList: [],
           seriesList: [],
-          fullList: []
+          fullList: [],
+          genres: []
       }
     },
     watch: {
@@ -44,71 +45,92 @@ export default {
     //     return [...this.seriesList, ...this.movieList]
     //   }
     // },
+    created() {
+      this.getAllGenres();
+    },
     methods: {
         getMovies: async function() {
             try {
+                // calls to get movies and series
                 let movies = await axios.get(`${this.urlMovie}?api_key=${this.apiKey}&language=it-IT&query=${this.param}`);
-                let series = await axios.get(`${this.urlSeries}?api_key=${this.apiKey}&language=it-IT&query=${this.param}`)
+                let series = await axios.get(`${this.urlSeries}?api_key=${this.apiKey}&language=it-IT&query=${this.param}`);
+
+                // creates an object with only the properties needed for TV series
                 if (series.status === 200) {
                   this.seriesList = series.data.results.map((result) => {
+                        
+                        // handles img in case of poster missing
                         let posterImgPath = this.handleMissingImg(result.poster_path);
+
+                        // object with the necessary properties
                         let obj = {
-                            id: result.id,
                             poster: `${posterImgPath}`,
                             originalTitle : result.original_name,
                             title: result.name,
                             overview: result.overview,
                             language: result.original_language,
                             rating: result.vote_average,
-                            cast: ''
+                            cast: '',
+                            genreId: result.genre_ids
                         }
 
-                        let seriesCast = [];
+                        // call to get actors of the movie
                         axios.get(`https://api.themoviedb.org/3/tv/${result.id}/credits?api_key=${this.apiKey}`)
                         .then((result) => {
-                          for (let i = 0; i < 5; i++) {
-                            seriesCast.push(result.data.cast[i].name);
-                          }
-                          let seriesCastToString = seriesCast.join(', ');
-                          console.log('series', series)
-                          obj.cast = seriesCastToString;
+                          let castList = this.handleActors(result);
+                          obj.cast = castList;
                         })
                         .catch((error) => {
                           console.log(error);
                         });
+
                         console.log(obj);
                         return obj;
                     });
                 }
 
+                // creates an object with only the necessary properties for movies
                 if (movies.status === 200) {
                     this.movieList = movies.data.results.map((result) => {
                         
+                        // console.log(result);
+
+                        // handles img in case of poster missing
                         let posterImgPath = this.handleMissingImg(result.poster_path);
 
+                        // object with necessary properties
                         let obj = {
-                            id: result.id,
                             poster: `${posterImgPath}`,
                             originalTitle : result.original_title,
                             title: result.title,
                             overview: result.overview,
                             language: result.original_language,
                             rating: result.vote_average,
-                            cast: ''
+                            cast: '',
+                            genres: ''
                         }
 
-                        let movieCast = [];
+                        // call to get actors
                         axios.get(`https://api.themoviedb.org/3/movie/${result.id}/credits?api_key=${this.apiKey}`)
                         .then((result) => {
-                          for (let i = 0; i < 5; i++) {
-                            movieCast.push(result.data.cast[i].name);
-                          }
-                          let movieCastToString = movieCast.join(', ');
-                          obj.cast = movieCastToString;
+                          let castList = this.handleActors(result);
+                          obj.cast = castList;
                         })
                         .catch((error) => {
                           console.log(error);
                         });
+
+                        let genresNames = [];
+                        this.genres.forEach((genre) => {
+                          for (let i = 0; i < result.genre_ids.length; i++) {
+                            if (genre.id === result.genre_ids[i]) {
+                              genresNames.push(genre.name);
+                              obj.genres = genresNames.join(', ');
+                              console.log(genresNames);
+                            }
+                          }
+                        })
+
                         console.log(obj);
                         return obj;
                     });
@@ -117,9 +139,8 @@ export default {
             } catch(error) {
                 console.log(error)
             }
-            
-            this.fullList = [...this.movieList, ...this.seriesList];
-            console.log('full list', this.fullList)
+
+            return this.fullList = [...this.movieList, ...this.seriesList];
         },
         resetSearch() {
           return this.fullList = [];
@@ -134,6 +155,19 @@ export default {
 
             return posterImgPath;
         },
+        handleActors(result) {
+          let cast = [];
+          for (let i = 0; i < 5; i++) {
+              cast.push(result.data.cast[i].name);
+            }
+            let castToString = cast.join(', ');
+            return castToString;
+        },
+        getAllGenres: async function() {
+          let allGenres = await axios.get(`https://api.themoviedb.org/3/genre/movie/list?api_key=${this.apiKey}`);
+          this.genres = allGenres.data.genres;
+          console.log('generi', this.genres);
+        }
     }
 }
 </script>
