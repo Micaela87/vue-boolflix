@@ -27,8 +27,7 @@ export default {
           urlSeries: 'https://api.themoviedb.org/3/search/tv',
           movieList: [],
           seriesList: [],
-          fullList: [],
-          searched: false
+          fullList: []
       }
     },
     watch: {

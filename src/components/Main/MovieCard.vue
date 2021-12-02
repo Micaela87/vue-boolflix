@@ -1,27 +1,25 @@
 <template>
   <div class="card">
-      <ul class="container">
-          <li>
-              <ul class="details">
-                <li><strong>Titolo originale: </strong>{{ details.originalTitle }}</li>
-                <li><strong>Titolo: </strong>{{ details.title }}</li>
-                <li><strong>Overview: </strong>{{ details.overview }}</li>
-                <li><strong>Lingua: </strong>
-                    <img class="language" :src="details.language === 'it' ? require('@/assets/img/ita.png') : require('@/assets/img/eng.png')" alt="">
-                    <!-- {{ details.language }} -->
-                </li> 
-                <li><strong>Voti: </strong>
-                    {{ ratingOutOfFive }}/{{maxRating}}
-                    <div>
-                        <font-awesome-icon v-for="n in 5" :key="n" :id="n" :icon="['fas', 'star']" :class="n <= ratingOutOfFive ? 'rated' : 'not-rated'"/>
-                    </div>
-                </li>
-              </ul>
-          </li>
-          <li class="poster">
-            <img :src="details.poster" :alt="details.title">
-          </li>   
-      </ul>
+      <div class="container">
+          <ul class="details">
+            <li><strong>Titolo originale: </strong>{{ details.originalTitle }}</li>
+            <li><strong>Titolo: </strong>{{ details.title }}</li>
+            <li><strong>Overview: </strong>{{ details.overview }}</li>
+            <li><strong>Lingua: </strong>
+                <img class="language" :src="require('@/assets/img/' + details.language + '.png')" :alt="details.language">
+            </li> 
+            <li><strong>Voti: </strong>
+                <span v-if="ratingOutOfMaxRating">{{ ratingOutOfMaxRating }}/{{maxRating}}</span>
+                <span v-else>Voto non disponibile</span>
+                <div>
+                    <font-awesome-icon v-for="n in maxRating" :key="n" :id="n" :icon="['fas', 'star']" :class="n <= ratingOutOfMaxRating ? 'rated' : 'not-rated'"/>
+                </div>
+            </li>              
+          </ul>
+          <div class="poster">
+            <img :src="details.poster" :alt="details.title">              
+          </div>
+      </div>
   </div>
 </template>
 
@@ -34,15 +32,15 @@ export default {
   },
   data() {
       return {
-          maxRating: 5
+          maxRating: 5,
       }
   },
   computed: {
-      ratingOutOfFive() {
+      ratingOutOfMaxRating() {
           if (this.details.rating) {
               return Math.floor((this.maxRating * this.details.rating) / 10);
           } else {
-              return 'Voto non disponibile';
+              return false;
           }
       }
   }
