@@ -17,7 +17,7 @@
                     <font-awesome-icon v-for="n in maxRating" :key="n" :id="n" :icon="['fas', 'star']" :class="n <= ratingOutOfMaxRating ? 'rated' : 'not-rated'"/>
                 </div>
             </li>
-            <li v-if="details.overview"><strong>Overview: </strong>{{ details.overview }}</li> 
+            <li v-if="details.overview" class="handle-overflow"><strong>Overview: </strong>{{ details.overview }}</li> 
             <li v-else><strong>Overview: </strong>Overview non disponibile</li>        
           </ul>
           <div class="poster">
@@ -92,6 +92,11 @@ export default {
 
     .not-rated {
         color: white;
+    }
+
+    .handle-overflow {
+        max-height: 30rem;
+        overflow: auto;
     }
 
     .poster {
