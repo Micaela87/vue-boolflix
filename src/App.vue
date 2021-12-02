@@ -1,7 +1,7 @@
 <template>
   <div id="app">
-    <Header @sendResults="getMovies"/>
-    <Main :movies="movieList" :active="searched"/>
+    <Header @sendParam="getSearchParam"/>
+    <Main :param="searchParam" :active="searched"/>
   </div>
 </template>
 
@@ -17,16 +17,17 @@ export default {
     },
     data() {
         return {
-            movieList: [],
+            searchParam: '',
             searched: false
         };
     },
     methods: {
-        getMovies(searchResults, searched) {
-          console.log(searchResults);
-            this.movieList = searchResults;
-            console.log(this.movieList);
-            this.searched = searched;
+        getSearchParam(param) {
+          // console.log(searchResults);
+            this.searchParam = param;
+            // console.log(this.movieList);
+            // this.searched = searched;
+            console.log(this.searchParam);
         }
     },
 }

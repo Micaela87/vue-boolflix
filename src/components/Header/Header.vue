@@ -3,78 +3,77 @@
     <div id="logo">BOOTFLIX</div>
     <form action="">
         <input type="text" placeholder="Search a movie or a TV series" v-model.trim="searchParam">
-        <button @click.prevent="getMovies">Search</button>
+        <button @click.prevent="$emit('sendParam', searchParam)">Search</button>
         <button @click.prevent="resetSearch">Reset Search</button>
     </form>
   </header>
 </template>
 
 <script>
-import axios from 'axios';
+// import axios from 'axios';
 
 export default {
   name: 'Header',
   data() {
       return {
-          apiKey: '51568f4302a2904751f1dfa9123f0199',
-          urlMovie: 'https://api.themoviedb.org/3/search/movie',
-          urlSeries: 'https://api.themoviedb.org/3/search/tv',
+        //   apiKey: '51568f4302a2904751f1dfa9123f0199',
+        //   urlMovie: 'https://api.themoviedb.org/3/search/movie',
+        //   urlSeries: 'https://api.themoviedb.org/3/search/tv',
           searchParam: '',
-          movieList: [],
-          seriesList: [],
-          searched: false
+        //   movieList: [],
+        //   seriesList: [],
+        //   searched: false
       }
   },
-  methods: {
-      getMovies: async function() {
-          try {
-              let movies = await axios.get(`${this.urlMovie}?api_key=${this.apiKey}&language=it-IT&query=${this.searchParam}`);
-              let series = await axios.get(`${this.urlSeries}?api_key=${this.apiKey}&language=it-IT&query=${this.searchParam}`)
-              if (series.status === 200) {
-                  console.log('serie tv', series);
+//   methods: {
+//       getMovies: async function() {
+//           try {
+//               let movies = await axios.get(`${this.urlMovie}?api_key=${this.apiKey}&language=it-IT&query=${this.searchParam}`);
+//               let series = await axios.get(`${this.urlSeries}?api_key=${this.apiKey}&language=it-IT&query=${this.searchParam}`)
+//               if (series.status === 200) {
+//                   console.log('serie tv', series);
 
-                this.seriesList = series.data.results.map((result) => {
-                      return {
-                          poster: `https://image.tmdb.org/t/p/w342${result.poster_path}`,
-                          originalTitle : result.original_name,
-                          title: result.name,
-                          overview: result.overview,
-                          language: result.original_language,
-                          rating: result.vote_average
-                      }
-                  });
-              }
-              if (movies.status === 200) {
-                  console.log('film', movies);
+//                 this.seriesList = series.data.results.map((result) => {
+//                       return {
+//                           poster: `https://image.tmdb.org/t/p/w342${result.poster_path}`,
+//                           originalTitle : result.original_name,
+//                           title: result.name,
+//                           overview: result.overview,
+//                           language: result.original_language,
+//                           rating: result.vote_average
+//                       }
+//                   });
+//               }
+//               if (movies.status === 200) {
+//                   console.log('film', movies);
 
-                  this.movieList = movies.data.results.map((result) => {
-                      return {
-                          poster: `https://image.tmdb.org/t/p/w342${result.poster_path}`,
-                          originalTitle : result.original_title,
-                          title: result.title,
-                          overview: result.overview,
-                          language: result.original_language,
-                          rating: result.vote_average
-                      }
-                  });
-                //   console.log(this.movieList);
-              }
+//                   this.movieList = movies.data.results.map((result) => {
+//                       return {
+//                           poster: `https://image.tmdb.org/t/p/w342${result.poster_path}`,
+//                           originalTitle : result.original_title,
+//                           title: result.title,
+//                           overview: result.overview,
+//                           language: result.original_language,
+//                           rating: result.vote_average
+//                       }
+//                   });
+//                 //   console.log(this.movieList);
+//               }
 
-              this.searched = true;
+//               this.searched = true;
 
-              this.$emit('sendResults', [...this.movieList, ...this.seriesList], this.searched);
+//               this.$emit('sendResults', [...this.movieList, ...this.seriesList], this.searched);
               
-          } catch(error) {
-              console.log(error)
-          }
-      },
+//           } catch(error) {
+//               console.log(error)
+//           }
+//       },
       resetSearch() {
           this.searchParam = '';
           this.movieList = [];
           this.seriesList = [];
           this.$emit('sendResults', [...this.movieList, ...this.seriesList]);
       }
-  }
 }
 </script>
 
