@@ -1,10 +1,15 @@
 <template>
   <main>
     <form>
-        <label for="genre">Sort by Genre</label>
-        <select name="genre" id="genre" v-model="selectedGenre">
+        <label for="genre">Sort Movie by Genre</label>
+        <select ref="movies" name="genre" id="genre" v-model="selectedMovieGenre">
             <option value="" selected>All</option>
-            <option :value="genre.name" v-for="(genre, i) in genres" :key="i">{{ genre.name }}</option>
+            <option :value="genre.name" v-for="(genre, i) in movieGenres" :key="i">{{ genre.name }}</option>
+        </select>
+        <label for="genre">Sort Series by Genre</label>
+        <select ref="series" name="genre" id="genre" v-model="selectedSeriesGenre">
+            <option value="" selected>All</option>
+            <option :value="genre.name" v-for="(genre, i) in seriesGenres" :key="i">{{ genre.name }}</option>
         </select>
     </form>
       <div class="results">
@@ -35,18 +40,25 @@ export default {
           movieList: [],
           seriesList: [],
           fullList: [],
-          genres: [],
+          movieGenres: [],
+          seriesGenres: [],
+          selectedMovieGenre: '',
+          selectedSeriesGenre: '',
           selectedGenre: ''
       }
     },
     computed: {
       filteredResults() {
-        console.log('selectedgenre', this.selectedGenre);
+        console.log(this.selectedGenre);
         if (!this.selectedGenre) {
-          return this.fullList
+          return this.fullList;
         }
-
-        return this.fullList.filter((movie) => movie.genres.includes(this.selectedGenre));
+        
+        return this.fullList.filter((movie) => {
+          if (movie.genres.includes(this.selectedGenre)) {
+            return movie;
+          }
+        })
       }
     },
     watch: {
@@ -57,9 +69,28 @@ export default {
           this.resetSearch();
         }
       },
+      selectedMovieGenre(newValue) {
+        if (newValue) {
+          this.$refs.series.setAttribute('disabled', true);
+          this.selectedGenre = newValue;
+        } else {
+          this.$refs.series.removeAttribute('disabled');
+          this.selectedGenre = newValue;
+        }
+      },
+      selectedSeriesGenre(newValue) {
+        if (newValue) {
+          this.$refs.movies.setAttribute('disabled', true);
+          this.selectedGenre = newValue;
+        } else {
+          this.$refs.movies.removeAttribute('disabled');
+          this.selectedGenre = newValue;
+        }
+      }
     },
     created() {
-      this.getAllGenres();
+      this.getAllMovieGenres();
+      this.getAllSeriesGenres();
     },
     methods: {
         getMovies: async function() {
@@ -97,7 +128,7 @@ export default {
                           console.log(error);
                         });
 
-                        let genres = this.handleGenres(result.genre_ids);
+                        let genres = this.handleSeriesGenres(result.genre_ids);
                         obj.genres = genres;
 
                         console.log(obj);
@@ -136,7 +167,7 @@ export default {
                           console.log(error);
                         });
 
-                        let genres = this.handleGenres(result.genre_ids);
+                        let genres = this.handleMovieGenres(result.genre_ids);
                         obj.genres = genres;
 
                         // console.log(obj);
@@ -171,9 +202,9 @@ export default {
             let castToString = cast.join(', ');
             return castToString;
         },
-        handleGenres(genresArr) {
+        handleMovieGenres(genresArr) {
           let genresNames = [];
-          this.genres.forEach((genre) => {
+          this.movieGenres.forEach((genre) => {
             for (let i = 0; i < genresArr.length; i++) {
               if (genre.id === genresArr[i]) {
                 genresNames.push(genre.name);
@@ -182,10 +213,26 @@ export default {
           });
           return genresNames.join(', ');
         },
-        getAllGenres: async function() {
-          let allGenres = await axios.get(`https://api.themoviedb.org/3/genre/movie/list?api_key=${this.apiKey}`);
-          this.genres = allGenres.data.genres;
-          console.log('generi', this.genres);
+        handleSeriesGenres(genresArr) {
+          let genresNames = [];
+          this.seriesGenres.forEach((genre) => {
+            for (let i = 0; i < genresArr.length; i++) {
+              if (genre.id === genresArr[i]) {
+                genresNames.push(genre.name);
+              }
+            }
+          });
+          return genresNames.join(', ');
+        },
+        getAllMovieGenres: async function() {
+          let allMovieGenres = await axios.get(`https://api.themoviedb.org/3/genre/movie/list?api_key=${this.apiKey}`);
+          this.movieGenres = allMovieGenres.data.genres;
+          console.log('generi', this.movieGenres);
+        },
+        getAllSeriesGenres: async function() {
+          let allSeriesGenres = await axios.get(`https://api.themoviedb.org/3/genre/tv/list?api_key=${this.apiKey}`);
+          this.seriesGenres = allSeriesGenres.data.genres;
+          console.log('generi', this.seriesGenres);
         }
     }
 }
