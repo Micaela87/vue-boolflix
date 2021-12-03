@@ -37,20 +37,16 @@ export default {
           apiKey: '51568f4302a2904751f1dfa9123f0199',
           urlMovie: 'https://api.themoviedb.org/3/search/movie',
           urlSeries: 'https://api.themoviedb.org/3/search/tv',
-          movieList: [],
-          seriesList: [],
           fullList: [],
           movieGenres: [],
           seriesGenres: [],
           allGenres: [],
           selectedMovieGenre: '',
           selectedSeriesGenre: '',
-          selectedGenre: ''
       }
     },
     computed: {
       filteredResults() {
-        console.log(this.selectedGenre);
         if (!this.selectedGenre) {
           return this.fullList;
         }
@@ -60,6 +56,13 @@ export default {
             return movie;
           }
         })
+      },
+      selectedGenre() {
+        if (this.selectedMovieGenre) {
+          return this.selectedMovieGenre;
+        } else {
+          return this.selectedSeriesGenre;
+        }
       }
     },
     watch: {
@@ -73,19 +76,15 @@ export default {
       selectedMovieGenre(newValue) {
         if (newValue) {
           this.$refs.series.setAttribute('disabled', true);
-          this.selectedGenre = newValue;
         } else {
           this.$refs.series.removeAttribute('disabled');
-          this.selectedGenre = newValue;
         }
       },
       selectedSeriesGenre(newValue) {
         if (newValue) {
           this.$refs.movies.setAttribute('disabled', true);
-          this.selectedGenre = newValue;
         } else {
           this.$refs.movies.removeAttribute('disabled');
-          this.selectedGenre = newValue;
         }
       }
     },
@@ -99,16 +98,20 @@ export default {
                 let movies = await axios.get(`${this.urlMovie}?api_key=${this.apiKey}&language=it-IT&query=${this.param}`);
                 let series = await axios.get(`${this.urlSeries}?api_key=${this.apiKey}&language=it-IT&query=${this.param}`);
 
-                // creates an object with only the properties needed for TV series
+                let seriesList = [],
+                    movieList = [];
+                // saves results into seriesList array
                 if (series.status === 200) {
-                  this.seriesList = series.data.results;
+                  seriesList = series.data.results;
                 }
                 
+                // saves results into movieList array
                 if (movies.status === 200) {
-                  this.movieList = movies.data.results;
+                  movieList = movies.data.results;
                 }
 
-                return this.fullList = [...this.movieList, ...this.seriesList].map((result) => {
+                // returns a list of objects with only the necessary properties
+                return this.fullList = [...movieList, ...seriesList].map((result) => {
                   let posterImgPath = this.handleMissingImg(result.poster_path),
                       title = result.title ? result.title : result.name,
                       originalTitle = result.original_title ? result.original_title : result.original_name,
@@ -163,7 +166,7 @@ export default {
               cast.push(result.data.cast[i].name);
           }
 
-          if (cast.length === 0) {
+          if (!cast.length) {
             return 'Cast non disponibile';
           }
           
@@ -179,7 +182,7 @@ export default {
               }
             });
           
-          if (genresNames.length === 0) {
+          if (!genresNames.length) {
             return 'Genere non disponibile';
           }
 
