@@ -116,14 +116,22 @@ export default {
                       title = result.title ? result.title : result.name,
                       originalTitle = result.original_title ? result.original_title : result.original_name,
                       category = result.title ? 'movie' : 'tv',
-                      overview = result.overview ? result.overview : 'Overview non disponibile';
+                      overview = result.overview ? result.overview : 'Overview non disponibile',
+                      language = '';
+
+                  if (result.original_language === 'it' || result.original_language === 'en') {
+                    let src = require(`@/assets/img/${result.original_language}.png`)
+                    language = `<img style="width: 100%" src=${src} alt="${result.original_language}">`
+                  } else {
+                    language = `<span>${result.original_language.toUpperCase()}</span>`
+                  }
 
                   let obj = {
                       poster: `${posterImgPath}`,
                       originalTitle,
                       title,
                       overview,
-                      language: result.original_language,
+                      language,
                       rating: result.vote_average,
                       cast: '',
                       genres: '',

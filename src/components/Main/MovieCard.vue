@@ -4,9 +4,7 @@
           <ul class="details">
             <li><strong>Titolo originale: </strong>{{ details.originalTitle }}</li>
             <li><strong>Titolo: </strong>{{ details.title }}</li>
-            <li><strong>Lingua: </strong>
-                <img v-if="details.language === 'it' || details.language === 'en'" class="language" :src="require('@/assets/img/' + details.language + '.png')" :alt="details.language">
-                <span v-else>{{ details.language.toUpperCase() }}</span>               
+            <li><strong>Lingua: </strong><div v-html="details.language" class="language"></div>
             </li>
             <li><strong>Cast: </strong>{{ details.cast }}</li>
             <li><strong>Genere: </strong>{{ details.genres }}</li>
@@ -80,10 +78,9 @@ export default {
     }
 
     .language {
+        display: inline-block;
         width: 2rem;
         height: 1rem;
-        line-height: 1.4;
-        vertical-align: middle;
     }
     .rated {
         color: yellow;
