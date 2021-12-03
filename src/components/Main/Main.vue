@@ -42,6 +42,7 @@ export default {
           fullList: [],
           movieGenres: [],
           seriesGenres: [],
+          allGenres: [],
           selectedMovieGenre: '',
           selectedSeriesGenre: '',
           selectedGenre: ''
@@ -89,8 +90,7 @@ export default {
       }
     },
     created() {
-      this.getAllMovieGenres();
-      this.getAllSeriesGenres();
+      this.getAllGenres();
     },
     methods: {
         getMovies: async function() {
@@ -101,64 +101,32 @@ export default {
 
                 // creates an object with only the properties needed for TV series
                 if (series.status === 200) {
-                  this.seriesList = series.data.results.map((result) => {
-                        
-                        // handles img in case of poster missing
-                        let posterImgPath = this.handleMissingImg(result.poster_path);
-
-                        // object with the necessary properties
-                        let obj = {
-                            poster: `${posterImgPath}`,
-                            originalTitle : result.original_name,
-                            title: result.name,
-                            overview: result.overview,
-                            language: result.original_language,
-                            rating: result.vote_average,
-                            cast: '',
-                            genres: ''
-                        }
-
-                        // call to get actors of the movie
-                        axios.get(`https://api.themoviedb.org/3/tv/${result.id}/credits?api_key=${this.apiKey}`)
-                        .then((result) => {
-                          let castList = this.handleActors(result);
-                          obj.cast = castList;
-                        })
-                        .catch((error) => {
-                          console.log(error);
-                        });
-
-                        let genres = this.handleSeriesGenres(result.genre_ids);
-                        obj.genres = genres;
-
-                        console.log(obj);
-                        return obj;
-                    });
+                  this.seriesList = series.data.results;
                 }
-
-                // creates an object with only the necessary properties for movies
+                
                 if (movies.status === 200) {
-                    this.movieList = movies.data.results.map((result) => {
-                        
-                        // console.log(result);
+                  this.movieList = movies.data.results;
+                }
 
-                        // handles img in case of poster missing
-                        let posterImgPath = this.handleMissingImg(result.poster_path);
+                return this.fullList = [...this.movieList, ...this.seriesList].map((result) => {
+                  let posterImgPath = this.handleMissingImg(result.poster_path);
+                  let title = result.title ? result.title : result.name;
+                  let originalTitle = result.original_title ? result.original_title : result.original_name;
+                  let category = result.title ? 'movie' : 'tv';
 
-                        // object with necessary properties
-                        let obj = {
-                            poster: `${posterImgPath}`,
-                            originalTitle : result.original_title,
-                            title: result.title,
-                            overview: result.overview,
-                            language: result.original_language,
-                            rating: result.vote_average,
-                            cast: '',
-                            genres: ''
-                        }
+                  let obj = {
+                      poster: `${posterImgPath}`,
+                      originalTitle,
+                      title,
+                      overview: result.overview,
+                      language: result.original_language,
+                      rating: result.vote_average,
+                      cast: '',
+                      genres: '',
+                      category
+                  }
 
-                        // call to get actors
-                        axios.get(`https://api.themoviedb.org/3/movie/${result.id}/credits?api_key=${this.apiKey}`)
+                  axios.get(`https://api.themoviedb.org/3/${category}/${result.id}/credits?api_key=${this.apiKey}`)
                         .then((result) => {
                           let castList = this.handleActors(result);
                           obj.cast = castList;
@@ -167,32 +135,24 @@ export default {
                           console.log(error);
                         });
 
-                        let genres = this.handleMovieGenres(result.genre_ids);
-                        obj.genres = genres;
+                  obj.genres = this.handleGenres(result.genre_ids);
 
-                        // console.log(obj);
-                        return obj;
-                    });
-                }
+                  return obj;
+                });
                 
             } catch(error) {
                 console.log(error)
             }
-
-            return this.fullList = [...this.movieList, ...this.seriesList];
         },
         resetSearch() {
           return this.fullList = [];
         },
         handleMissingImg(path) {
-            let posterImgPath = '';
             if (path) {
-              posterImgPath = `https://image.tmdb.org/t/p/w342${path}`
+              return `https://image.tmdb.org/t/p/w342${path}`
             } else {
-              posterImgPath = 'https://via.placeholder.com/342.jpg?text=Immagine+non+disponibile'
+              return 'https://via.placeholder.com/342.jpg?text=Immagine+non+disponibile'
             }
-
-            return posterImgPath;
         },
         handleActors(result) {
           let cast = [];
@@ -202,38 +162,25 @@ export default {
             let castToString = cast.join(', ');
             return castToString;
         },
-        handleMovieGenres(genresArr) {
+        handleGenres(genresArr) {
           let genresNames = [];
-          this.movieGenres.forEach((genre) => {
-            for (let i = 0; i < genresArr.length; i++) {
-              if (genre.id === genresArr[i]) {
-                genresNames.push(genre.name);
+              this.allGenres.forEach((genre) => {
+              for (let i = 0; i < genresArr.length; i++) {
+                if (genre.id === genresArr[i] && !genresNames.includes(genre.name)) {
+                  genresNames.push(genre.name);
+                }
               }
-            }
-          });
+            });
+
           return genresNames.join(', ');
         },
-        handleSeriesGenres(genresArr) {
-          let genresNames = [];
-          this.seriesGenres.forEach((genre) => {
-            for (let i = 0; i < genresArr.length; i++) {
-              if (genre.id === genresArr[i]) {
-                genresNames.push(genre.name);
-              }
-            }
-          });
-          return genresNames.join(', ');
-        },
-        getAllMovieGenres: async function() {
+        getAllGenres: async function() {
           let allMovieGenres = await axios.get(`https://api.themoviedb.org/3/genre/movie/list?api_key=${this.apiKey}`);
-          this.movieGenres = allMovieGenres.data.genres;
-          console.log('generi', this.movieGenres);
-        },
-        getAllSeriesGenres: async function() {
           let allSeriesGenres = await axios.get(`https://api.themoviedb.org/3/genre/tv/list?api_key=${this.apiKey}`);
           this.seriesGenres = allSeriesGenres.data.genres;
-          console.log('generi', this.seriesGenres);
-        }
+          this.movieGenres = allMovieGenres.data.genres;
+          return this.allGenres = [...this.seriesGenres, ...this.movieGenres]
+        },
     }
 }
 </script>
