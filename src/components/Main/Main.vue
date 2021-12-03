@@ -1,7 +1,7 @@
 <template>
   <main>
     <form>
-        <label for="genre">Sort Movie by Genre</label>
+        <label for="genre">Sort Movies by Genre</label>
         <select ref="movies" name="genre" id="genre" v-model="selectedMovieGenre">
             <option value="" selected>All</option>
             <option :value="genre.name" v-for="(genre, i) in movieGenres" :key="i">{{ genre.name }}</option>
