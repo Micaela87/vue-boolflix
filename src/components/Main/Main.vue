@@ -35,8 +35,7 @@ export default {
     data() {
       return {
           apiKey: '51568f4302a2904751f1dfa9123f0199',
-          urlMovie: 'https://api.themoviedb.org/3/search/movie',
-          urlSeries: 'https://api.themoviedb.org/3/search/tv',
+          baseUrl: 'https://api.themoviedb.org/3/search/',
           fullList: [],
           movieGenres: [],
           seriesGenres: [],
@@ -94,9 +93,18 @@ export default {
     methods: {
         getMovies: async function() {
             try {
+                let parameters = {
+                    api_key: `${this.apiKey}`,
+                    language: 'it-IT',
+                    query: `${this.param}`
+                }
                 // calls to get movies and series
-                let movies = await axios.get(`${this.urlMovie}?api_key=${this.apiKey}&language=it-IT&query=${this.param}`);
-                let series = await axios.get(`${this.urlSeries}?api_key=${this.apiKey}&language=it-IT&query=${this.param}`);
+                let movies = await axios.get(`${this.baseUrl}movie`, {
+                  params: parameters
+                });
+                let series = await axios.get(`${this.baseUrl}tv`, {
+                  params: parameters
+                });
 
                 let seriesList = [],
                     movieList = [];
@@ -120,7 +128,7 @@ export default {
                       language = '';
 
                   if (result.original_language === 'it' || result.original_language === 'en') {
-                    let src = require(`@/assets/img/${result.original_language}.png`)
+                    let src = require(`@/assets/img/${result.original_language}.png`);
                     language = `<img style="width: 100%" src=${src} alt="${result.original_language}">`
                   } else {
                     language = `<span>${result.original_language.toUpperCase()}</span>`
