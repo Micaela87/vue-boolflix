@@ -109,16 +109,17 @@ export default {
                 }
 
                 return this.fullList = [...this.movieList, ...this.seriesList].map((result) => {
-                  let posterImgPath = this.handleMissingImg(result.poster_path);
-                  let title = result.title ? result.title : result.name;
-                  let originalTitle = result.original_title ? result.original_title : result.original_name;
-                  let category = result.title ? 'movie' : 'tv';
+                  let posterImgPath = this.handleMissingImg(result.poster_path),
+                      title = result.title ? result.title : result.name,
+                      originalTitle = result.original_title ? result.original_title : result.original_name,
+                      category = result.title ? 'movie' : 'tv',
+                      overview = result.overview ? result.overview : 'Overview non disponibile';
 
                   let obj = {
                       poster: `${posterImgPath}`,
                       originalTitle,
                       title,
-                      overview: result.overview,
+                      overview,
                       language: result.original_language,
                       rating: result.vote_average,
                       cast: '',
@@ -128,8 +129,7 @@ export default {
 
                   axios.get(`https://api.themoviedb.org/3/${category}/${result.id}/credits?api_key=${this.apiKey}`)
                         .then((result) => {
-                          let castList = this.handleActors(result);
-                          obj.cast = castList;
+                          obj.cast = this.handleActors(result);
                         })
                         .catch((error) => {
                           console.log(error);
@@ -157,10 +157,17 @@ export default {
         handleActors(result) {
           let cast = [];
           for (let i = 0; i < 5; i++) {
+              if (!result.data.cast[i]) {
+                break;
+              }
               cast.push(result.data.cast[i].name);
-            }
-            let castToString = cast.join(', ');
-            return castToString;
+          }
+
+          if (cast.length === 0) {
+            return 'Cast non disponibile';
+          }
+          
+          return cast.join(', ');
         },
         handleGenres(genresArr) {
           let genresNames = [];
@@ -171,6 +178,10 @@ export default {
                 }
               }
             });
+          
+          if (genresNames.length === 0) {
+            return 'Genere non disponibile';
+          }
 
           return genresNames.join(', ');
         },

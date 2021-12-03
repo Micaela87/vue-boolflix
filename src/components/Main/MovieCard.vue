@@ -17,8 +17,7 @@
                     <font-awesome-icon v-for="n in maxRating" :key="n" :id="n" :icon="['fas', 'star']" :class="n <= ratingOutOfMaxRating ? 'rated' : 'not-rated'"/>
                 </div>
             </li>
-            <li v-if="details.overview" class="handle-overflow"><strong>Overview: </strong>{{ details.overview }}</li> 
-            <li v-else><strong>Overview: </strong>Overview non disponibile</li>        
+            <li class="handle-overflow"><strong>Overview: </strong>{{ details.overview }}</li>
           </ul>
           <div class="poster">
             <img :src="details.poster" :alt="details.title">              
