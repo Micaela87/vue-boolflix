@@ -59,9 +59,9 @@ export default {
       selectedGenre() {
         if (this.selectedMovieGenre) {
           return this.selectedMovieGenre;
-        } else {
-          return this.selectedSeriesGenre;
         }
+        
+        return this.selectedSeriesGenre;
       }
     },
     watch: {
@@ -125,14 +125,7 @@ export default {
                       originalTitle = result.original_title ? result.original_title : result.original_name,
                       category = result.title ? 'movie' : 'tv',
                       overview = result.overview ? result.overview : 'Overview non disponibile',
-                      language = '';
-
-                  if (result.original_language === 'it' || result.original_language === 'en') {
-                    let src = require(`@/assets/img/${result.original_language}.png`);
-                    language = `<img style="width: 100%" src=${src} alt="${result.original_language}">`
-                  } else {
-                    language = `<span>${result.original_language.toUpperCase()}</span>`
-                  }
+                      language = this.handleLanguegaFlag(result.original_language);
 
                   let obj = {
                       poster: `${posterImgPath}`,
@@ -169,9 +162,17 @@ export default {
         handleMissingImg(path) {
             if (path) {
               return `https://image.tmdb.org/t/p/w342${path}`
-            } else {
-              return 'https://via.placeholder.com/342.jpg?text=Immagine+non+disponibile'
             }
+            
+            return 'https://via.placeholder.com/342.jpg?text=Immagine+non+disponibile'
+        },
+        handleLanguegaFlag(data) {
+            if (data === 'it' || data === 'en') {
+              let src = require(`@/assets/img/${data}.png`);
+              return `<img style="width: 100%" src=${src} alt="${data}">`
+            }
+
+            return `<span>${data.toUpperCase()}</span>`
         },
         handleActors(result) {
           let cast = [];
