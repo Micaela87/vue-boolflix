@@ -1,17 +1,9 @@
 <template>
   <main>
-    <form>
-        <label for="genre">Sort Movies by Genre</label>
-        <select ref="movies" name="genre" id="genre" v-model="selectedMovieGenre">
-            <option value="" selected>All</option>
-            <option :value="genre.name" v-for="(genre, i) in movieGenres" :key="i">{{ genre.name }}</option>
-        </select>
-        <label for="genre">Sort Series by Genre</label>
-        <select ref="series" name="genre" id="genre" v-model="selectedSeriesGenre">
-            <option value="" selected>All</option>
-            <option :value="genre.name" v-for="(genre, i) in seriesGenres" :key="i">{{ genre.name }}</option>
-        </select>
-    </form>
+    <div class="filters">
+      <SelectFilter :genre="movieGenres" :toBeDisabled="seriesHasBeenSelected" reference="movie" labelText="Sort Movie by Genre" @sendValue="handleSelectedMovieValue"/>
+      <SelectFilter :genre="seriesGenres" :toBeDisabled="movieHasBeenSelected" reference="series" labelText="Sort Series by Genre" @sendValue="handleSelectedSeriesValue"/>
+    </div>
       <div class="results">
         <MovieCard
         v-for="(movie, i) in filteredResults" :key="i"
@@ -23,11 +15,13 @@
 <script>
 import axios from 'axios';
 import MovieCard from "./MovieCard.vue";
+import SelectFilter from './SelectFilter.vue';
 
 export default {
     name: "Main",
     components: {
         MovieCard,
+        SelectFilter
     },
       props: {
           param: String,
@@ -40,8 +34,11 @@ export default {
           movieGenres: [],
           seriesGenres: [],
           allGenres: [],
-          selectedMovieGenre: '',
-          selectedSeriesGenre: '',
+          // selectedMovieGenre: '',
+          // selectedSeriesGenre: '',
+          selectedGenre: '',
+          movieHasBeenSelected: false,
+          seriesHasBeenSelected: false
       }
     },
     computed: {
@@ -56,13 +53,6 @@ export default {
           }
         })
       },
-      selectedGenre() {
-        if (this.selectedMovieGenre) {
-          return this.selectedMovieGenre;
-        }
-        
-        return this.selectedSeriesGenre;
-      }
     },
     watch: {
       param(newValue) {
@@ -72,27 +62,13 @@ export default {
           this.resetSearch();
         }
       },
-      selectedMovieGenre(newValue) {
-        if (newValue) {
-          this.$refs.series.setAttribute('disabled', true);
-        } else {
-          this.$refs.series.removeAttribute('disabled');
-        }
-      },
-      selectedSeriesGenre(newValue) {
-        if (newValue) {
-          this.$refs.movies.setAttribute('disabled', true);
-        } else {
-          this.$refs.movies.removeAttribute('disabled');
-        }
-      }
     },
     created() {
       this.getAllGenres();
     },
     methods: {
         getMovies: async function() {
-            try {
+          try {
                 let parameters = {
                     api_key: `${this.apiKey}`,
                     language: 'it-IT',
@@ -152,9 +128,9 @@ export default {
                   return obj;
                 });
                 
-            } catch(error) {
+          } catch(error) {
                 console.log(error)
-            }
+          }
         },
         resetSearch() {
           return this.fullList = [];
@@ -205,12 +181,32 @@ export default {
 
           return genresNames.join(', ');
         },
+        handleSelectedMovieValue(newValue, selected) {
+          if (!newValue) {
+            this.movieHasBeenSelected = !selected;
+          } else {
+            this.movieHasBeenSelected = selected;
+          }
+          this.selectedGenre = newValue;
+        },
+        handleSelectedSeriesValue(newValue, selected) {
+          if (!newValue) {
+            this.seriesHasBeenSelected = !selected;
+          } else {
+            this.seriesHasBeenSelected = selected;
+          }
+          this.selectedGenre = newValue;
+        },
         getAllGenres: async function() {
-          let allMovieGenres = await axios.get(`https://api.themoviedb.org/3/genre/movie/list?api_key=${this.apiKey}`);
-          let allSeriesGenres = await axios.get(`https://api.themoviedb.org/3/genre/tv/list?api_key=${this.apiKey}`);
-          this.seriesGenres = allSeriesGenres.data.genres;
-          this.movieGenres = allMovieGenres.data.genres;
-          return this.allGenres = [...this.seriesGenres, ...this.movieGenres]
+          try {
+            let allMovieGenres = await axios.get(`https://api.themoviedb.org/3/genre/movie/list?api_key=${this.apiKey}`);
+            let allSeriesGenres = await axios.get(`https://api.themoviedb.org/3/genre/tv/list?api_key=${this.apiKey}`);
+            this.seriesGenres = allSeriesGenres.data.genres;
+            this.movieGenres = allMovieGenres.data.genres;
+            return this.allGenres = [...this.seriesGenres, ...this.movieGenres]
+          } catch(error) {
+            console.log(error);
+          }
         },
     }
 }
@@ -221,20 +217,10 @@ export default {
         background-color: grey;
     }
 
-    form {
-      padding: 2rem;
+    .filters {
+      display: flex;
+      justify-content: flex-start;
     }
-
-    label {
-      font-size: 1.6rem;
-      margin: 0 1rem;
-    }
-
-    option, select {
-      font-size: 1.6rem;
-      font-family: 'Roboto', sans-serif;
-    }
-
     .results {
         display: flex;
         flex-wrap: wrap;
